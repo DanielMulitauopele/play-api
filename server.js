@@ -35,7 +35,7 @@ app.post('/api/v1/songs', (request, response) => {
 
   database('songs').insert(song, ['id', 'name', 'artist_name', 'genre', 'song_rating'])
     .then(song => {
-      response.status(201).json(song)
+      response.status(201).json({ songs: song[0] })
     })
     .catch(error => {
       response.status(500).json({ error });
