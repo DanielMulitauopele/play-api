@@ -1,6 +1,14 @@
 // Update with your config settings.
 
 module.exports = {
+  test: {
+    client: 'pg',
+    connection: 'postgres://localhost/play_test',
+    migrations: {
+      directory: './db/migrations'
+    },
+    useNullAsDefault: true
+  },
 
   development: {
     client: 'pg',
