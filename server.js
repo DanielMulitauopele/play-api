@@ -80,6 +80,49 @@ app.post('/api/v1/playlists', (request, response) => {
     });
 });
 
+app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
+  let playlistId = request.params.playlist_id;
+  let songId = request.params.id;
+
+  database('playlists').where('id', playlistId).select()
+    .then(playlists => {
+      if(playlists.length) {
+        return playlistName = playlists[0]['playlist_name'];
+      } else {
+        response.status(404).json({
+          error: `Could not find playlist with id ${playlistId}`
+        });
+      }
+    })
+    .catch(error => {
+      response.status(500).json({ error });
+    });
+
+  database('songs').where('id', songId).select()
+    .then(songs => {
+      if(songs.length) {
+        return songName = songs[0]['name'];
+      } else {
+        response.status(404).json({
+          error: `Could not find playlist with id ${playlistId}`
+        });
+      }
+    })
+    .catch(error => {
+      response.status(500).json({ error })
+    });
+
+  database('playlist_songs').insert( { song_id: songId, playlist_id: playlistId} )
+    .then(data => {
+      response.status(201).json({
+        message: `Successfully added ${songName} to ${playlistName}`
+      });
+    })
+    .catch(error => {
+      response.status(500).json({ error });
+    });
+});
+
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}.`);
 });
