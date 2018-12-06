@@ -65,3 +65,14 @@ describe('POST /api/v1/playlists', () => {
     });
   });
 });
+
+describe('GET /api/v1/playlists', () => {
+  it('should return all playlists', done => {
+    chai.request(server)
+    .get('/api/v1/playlists')
+    .end((error, response) => {
+      response.should.have.status(200);
+      done();
+    });
+  });
+});
