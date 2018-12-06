@@ -52,6 +52,11 @@ app.get('/api/v1/songs', (request, response) => {
   });
 });
 
+app.get('/api/v1/songs/:id', (request, response) => {
+  database('songs').where('id', request.params.id).select()
+  
+})
+
 app.get('/api/v1/playlists', (request, response) => {
   database('playlists').select()
   .then((playlists) => {

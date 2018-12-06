@@ -41,3 +41,15 @@ describe('GET /api/v1/songs', () => {
     });
   });
 });
+
+describe('GET /api/v1/songs', () => {
+  it('should return song by id', done => {
+    chai.request(server)
+    .get('/api/v1/songs/:id')
+    .end((error, response) => {
+      response.should.have.status(200);
+      response.should.be.json;
+      done();
+    })
+  });
+});
