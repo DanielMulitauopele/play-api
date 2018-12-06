@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('./knexfile')[environment];
 const database = require('knex')(configuration);
+const pry = require('pryjs')
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true}));
@@ -71,19 +72,24 @@ app.get('/api/v1/songs/:id', (request, response) => {
 app.get('/api/v1/playlists/:id/songs', (request, response) => {
   database('playlists').where('id', request.params.id).select()
     .then (playlists => {
-      response.status(200).json(playlists);
-    })
-    .catch ((error) => {
-      response.status(500).json({error});
+      if (playlists.length) {
+        playlistName = playlists[0]['playlist_name']
+      } else {
+        response.status(404).json({ error: `Playlist with ID ${request.params.id} does not exist` });
+      }
     })
     .then(() => {
       database('songs').select()
       .then(songs => {
-        response.status(200).json({songs});
+        if (songs.length > 0) {
+          response.status(200).json({songs});
+        } else {
+          response.status(404).json({error: `There are no saved songs in ${playlistName}`})
+        }
       })
-      .catch(error => {
-        response.status(500).json({error});
-      })
+    })
+    .catch ((error) => {
+      response.status(500).json({error});
     })
 })
 
