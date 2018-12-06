@@ -49,8 +49,18 @@ app.get('/api/v1/songs', (request, response) => {
   })
   .catch((error) => {
     response.status(500).json({error});
+  });
+});
+
+app.get('/api/v1/playlists', (request, response) => {
+  database('playlists').select()
+  .then((playlists) => {
+    response.status(200).json(playlists);
   })
-})
+  .catch((error) => {
+    response.status(500).json({error});
+  });
+});
 
 app.post('/api/v1/playlists', (request, response) => {
   const playlist = request.body;
