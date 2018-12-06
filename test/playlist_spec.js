@@ -67,6 +67,25 @@ describe('POST /api/v1/playlists', () => {
 });
 
 describe('GET /api/v1/playlists', () => {
+  beforeEach((done) => {
+    database.migrate.rollback()
+      .then(() => {
+        database.migrate.latest()
+          .then(() => done())
+          .catch(error => {
+            throw error;
+          });
+      });
+  });
+
+  afterEach((done) => {
+    database.migrate.rollback()
+      .then(() => done())
+      .catch(error => {
+        throw error;
+      });
+  });
+
   it('should return all playlists', done => {
     chai.request(server)
     .get('/api/v1/playlists')
