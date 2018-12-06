@@ -4,7 +4,8 @@
   "description": "The backend Express application to run Play's frontend.",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "start": "node server.js"
   },
   "author": "Mike McKee, Daniel Mulitauopele",
   "license": "ISC",
@@ -19,5 +20,17 @@
     "chai": "^4.2.0",
     "chai-http": "^4.2.0",
     "mocha": "^5.2.0"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DanielMulitauopele/play-api.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/DanielMulitauopele/play-api/issues"
+  },
+  "homepage": "https://github.com/DanielMulitauopele/play-api#readme"
 }

@@ -42,6 +42,16 @@ app.post('/api/v1/songs', (request, response) => {
     });
 });
 
+app.get('/api/v1/songs', (request, response) => {
+  database('songs').select()
+  .then((songs) => {
+    response.status(200).json(songs);
+  })
+  .catch((error) => {
+    response.status(500).json({error});
+  })
+})
+
 app.post('/api/v1/playlists', (request, response) => {
   const playlist = request.body;
 
@@ -65,4 +75,3 @@ app.listen(app.get('port'), () => {
 });
 
 module.exports = app;
-
