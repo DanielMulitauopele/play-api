@@ -88,5 +88,23 @@ describe('API Playlist Endpoints', () => {
           done();
         });
     });
+
+    it('should not add a song to invalid playlist', done => {
+      chai.request(server)
+        .post('/api/v1/playlists/1000/songs/1')
+        .end((err, response) => {
+          response.should.have.status(404);
+          done();
+        });
+    });
+
+    it('should not add an invalid song to a playlist', done => {
+      chai.request(server)
+        .post('/api/v1/playlists/1/songs/10000')
+        .end((err, response) => {
+          response.should.have.status(404);
+          done();
+        });
+    });
   });
 });
