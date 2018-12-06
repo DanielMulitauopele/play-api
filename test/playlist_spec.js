@@ -7,15 +7,15 @@ const server = require('../server');
 
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('../knexfile')[environment];
-const knex = require('knex')(configuration);
+const database = require('knex')(configuration);
 
 chai.use(chaiHttp);
 
 describe('POST /api/v1/playlists', () => {
   beforeEach((done) => {
-    knex.migrate.rollback()
+    database.migrate.rollback()
       .then(() => {
-        knex.migrate.latest()
+        database.migrate.latest()
           .then(() => done())
           .catch(error => {
             throw error;
@@ -24,7 +24,7 @@ describe('POST /api/v1/playlists', () => {
   });
 
   afterEach((done) => {
-    knex.migrate.rollback()
+    database.migrate.rollback()
       .then(() => done())
       .catch(error => {
         throw error;
@@ -45,6 +45,22 @@ describe('POST /api/v1/playlists', () => {
         response.body['playlist'].should.have.property('id');
         response.body['playlist'].should.have.property('playlist_name');
         response.body['playlist']['playlist_name'].should.equal('Test Playlist 2');
+        done();
+    });
+  });
+
+  it('should not create a playlist if field is empty', done => {
+    chai.request(server)
+      .post('/api/v1/playlists')
+      .send({
+        playlist_name: ''
+      })
+      .end((err, response) => {
+        response.should.have.status(400);
+        response.should.have.be.json;
+        response.body.should.be.a('object');
+        response.body.should.have.property('error');
+        response.body.error.should.equal('Expected format: { playlist_name: <String> }.');
         done();
     });
   });
