@@ -5,10 +5,13 @@ const server = require('../server');
 
 chai.use(chaiHttp);
 
-before((done) => {
-  database.migrate.latest()
-    .then(() => done())
-    .catch(error => {
-      throw error;
-    });
-});
+describe('GET /api/v1/songs', () => {
+  it('should return all favorited songs', done => {
+    chai.request(server)
+    .get('/api/v1/songs')
+    .end((error, response) => {
+      response.should.have.status(200);
+      done();
+    })
+  })
+})
