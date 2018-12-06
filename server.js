@@ -105,30 +105,26 @@ app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
       if(playlists.length) {
         playlistName = playlists[0]['playlist_name'];
       } else {
-        return response.send(404);
+        response.status(404).send({ error: `Playlist with ID ${playlistId} does not exist` });
       }
     })
-    .catch(error => {
-      response.status(500).json({ error });
-    });
-
-  database('songs').where('id', songId).select()
-    .then(songs => {
-      if(songs.length) {
-        songName = songs[0]['name'];
-      } else {
-        return response.send(404);
-      }
-    })
-    .catch(error => {
-      response.status(500).json({ error })
-    });
-
-  database('playlist_songs').insert({ song_id: songId, playlist_id: playlistId })
-    .then(data => {
-      response.status(201).json({
-        message: `Successfully added ${songName} to ${playlistName}`
-      });
+    .then(() => {
+      database('songs').where('id', songId).select()
+        .then(songs => {
+          if(songs.length) {
+            songName = songs[0]['name'];
+          } else {
+            response.status(404).send({ error: `Song with ID ${songId} does not exist` });
+          }
+        })
+        .then(() => {
+          database('playlist_songs').insert({ song_id: songId, playlist_id: playlistId })
+            .then(data => {
+              response.status(201).json({
+                message: `Successfully added ${songName} to ${playlistName}`
+              })
+            })
+        })
     })
     .catch(error => {
       response.status(500).send({ error });
