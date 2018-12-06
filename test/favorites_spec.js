@@ -16,21 +16,16 @@ describe('GET /api/v1/songs', () => {
     database.migrate.rollback()
       .then(() => {
         database.migrate.latest()
-          .then(() => done())
-          .catch(error => {
-            throw error;
+          .then(() => {
+            database.seed.run()
+            .then(() => done())
+            .catch(error => {
+              throw error;
+            });
           });
       });
   });
 
-  afterEach((done) => {
-    database.migrate.rollback()
-      .then(() => done())
-      .catch(error => {
-        throw error;
-      });
-  });
-  
   it('should return all favorited songs', done => {
     chai.request(server)
     .get('/api/v1/songs')
@@ -39,5 +34,31 @@ describe('GET /api/v1/songs', () => {
       response.should.be.json;
       done();
     });
+  });
+
+  it('should return song by id', done => {
+    chai.request(server)
+    .get('/api/v1/songs/2')
+    .end((error, response) => {
+      response.should.have.status(200);
+      response.should.be.json;
+      response.body[0].name.should.equal('Fooey')
+      response.body[0].artist_name.should.equal('Bobbie')
+      response.body[0].genre.should.equal('Rap')
+      response.body[0].song_rating.should.equal(62)
+      done();
+    })
+  });
+
+  it('should return error if id does not exist', done => {
+    chai.request(server)
+    .get('/api/v1/songs/7')
+    .end((error, response) => {
+      response.should.have.status(404);
+      response.body.error.should.equal(
+        `Could not find song with id: 7`
+      )
+      done();
+    })
   });
 });
