@@ -101,4 +101,16 @@ describe('API Playlist Endpoints', () => {
         });
     });
   });
+
+  describe('GET /api/v1/playlists/:id/songs', () => {
+    it('should return all songs in a specific playlist', done => {
+      chai.request(server)
+        .get('/api/v1/playlists/1/songs')
+        .end((error, response) => {
+          response.should.have.status(200);
+          response.should.be.json;
+          done();
+        })
+    });
+  });
 });
