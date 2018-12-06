@@ -3,10 +3,10 @@ exports.seed = function(knex, Promise) {
   // Without this initial `return` statement, the seed execution
   // will end before the asynchronous tasks have completed
   return knex('songs').del() // delete all footnotes first
-    // Now that we have a clean slate, we can re-insert our paper data
+    // Now that we have a clean slate, we can re-insert our song data
     .then(() => {
       return Promise.all([
-        // Insert a single paper, return the paper ID, insert 2 footnotes
+        // Insert a single playlist, return the playlist ID, insert 3 songs
         knex('songs').insert([
           { name: 'Fooo', artist_name: 'Bob', genre: 'Rock', song_rating: 80 },
           { name: 'Fooey', artist_name: 'Bobbie', genre: 'Rap', song_rating: 62 },
