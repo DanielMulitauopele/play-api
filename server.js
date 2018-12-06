@@ -89,7 +89,7 @@ app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
       if(playlists.length) {
         return playlistName = playlists[0]['playlist_name'];
       } else {
-        response.status(404).json({
+        return response.status(404).json({
           error: `Could not find playlist with id ${playlistId}`
         });
       }
@@ -103,7 +103,7 @@ app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
       if(songs.length) {
         return songName = songs[0]['name'];
       } else {
-        response.status(404).json({
+        return response.status(404).json({
           error: `Could not find playlist with id ${playlistId}`
         });
       }
