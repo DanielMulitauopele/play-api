@@ -42,7 +42,27 @@ app.post('/api/v1/songs', (request, response) => {
     });
 });
 
+app.post('/api/v1/playlists', (request, response) => {
+  const playlist = request.body;
+
+  if(!playlist['playlist_name']) {
+    return response
+      .status(400)
+      .send({ error: `Expected format: { playlist_name: <String> }.` });
+  }
+
+  database('playlists').insert(playlist, ['id', 'playlist_name'])
+    .then(playlist => {
+      response.status(201).json({ playlist: playlist[0] })
+    })
+    .catch(error => {
+      response.status(500).json({ error })
+    });
+});
+
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}.`);
 });
+
+module.exports = app;
 
