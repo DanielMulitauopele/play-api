@@ -1,3 +1,5 @@
+process.env.NODE_ENV = 'test';
+
 const chai = require('chai');
 const should = chai.should();
 const chaiHttp = require('chai-http');
@@ -9,15 +11,26 @@ const database = require('knex')(configuration);
 
 chai.use(chaiHttp);
 
-before((done) => {
-  database.migrate.latest()
-    .then(() => done())
-    .catch(error => {
-      throw error;
-    });
-});
-
 describe('GET /api/v1/songs', () => {
+  beforeEach((done) => {
+    database.migrate.rollback()
+      .then(() => {
+        database.migrate.latest()
+          .then(() => done())
+          .catch(error => {
+            throw error;
+          });
+      });
+  });
+
+  afterEach((done) => {
+    database.migrate.rollback()
+      .then(() => done())
+      .catch(error => {
+        throw error;
+      });
+  });
+  
   it('should return all favorited songs', done => {
     chai.request(server)
     .get('/api/v1/songs')
