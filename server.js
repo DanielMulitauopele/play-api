@@ -105,11 +105,7 @@ app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
       if(playlists.length) {
         playlistName = playlists[0]['playlist_name'];
       } else {
-        response
-          .status(404)
-          .json({
-            error: `Could not find playlist with id ${playlistId}`
-          });
+        return response.send(404);
       }
     })
     .catch(error => {
@@ -121,11 +117,7 @@ app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
       if(songs.length) {
         songName = songs[0]['name'];
       } else {
-        response
-          .status(404)
-          .json({
-            error: `Could not find song with id ${songId}`
-          });
+        return response.send(404);
       }
     })
     .catch(error => {
