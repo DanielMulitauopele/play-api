@@ -4,7 +4,6 @@ const chai = require('chai');
 const should = chai.should();
 const chaiHttp = require('chai-http');
 const server = require('../server');
-pry = require('pryjs');
 
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('../knexfile')[environment];
@@ -94,15 +93,10 @@ describe('API Playlist Endpoints', () => {
         .post('/api/v1/playlists/1000/songs/1')
         .end((err, response) => {
           response.should.have.status(404);
-          done();
-        });
-    });
-
-    it('should not add an invalid song to a playlist', done => {
-      chai.request(server)
-        .post('/api/v1/playlists/1/songs/10000')
-        .end((err, response) => {
-          response.should.have.status(404);
+          response.should.be.json;
+          response.should.be.a('Object');
+          response.body.should.have.property('error');
+          response.body.error.should.equal('Playlist with ID 1000 does not exist')
           done();
         });
     });
