@@ -49,4 +49,16 @@ describe('GET /api/v1/songs', () => {
       done();
     })
   });
+
+  it('should return error if id does not exist', done => {
+    chai.request(server)
+    .get('/api/v1/songs/7')
+    .end((error, response) => {
+      response.should.have.status(404);
+      response.body.error.should.equal(
+        `Could not find song with id: 7`
+      )
+      done();
+    })
+  });
 });
