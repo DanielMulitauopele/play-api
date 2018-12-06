@@ -42,6 +42,10 @@ describe('GET /api/v1/songs', () => {
     .end((error, response) => {
       response.should.have.status(200);
       response.should.be.json;
+      response.body[0].name.should.equal('Fooey')
+      response.body[0].artist_name.should.equal('Bobbie')
+      response.body[0].genre.should.equal('Rap')
+      response.body[0].song_rating.should.equal(62)
       done();
     })
   });
