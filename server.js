@@ -69,7 +69,22 @@ app.get('/api/v1/songs/:id', (request, response) => {
 })
 
 app.get('/api/v1/playlists/:id/songs', (request, response) => {
-  
+  database('playlists').where('id', request.params.id).select()
+    .then (playlists => {
+      response.status(200).json(playlists);
+    })
+    .catch ((error) => {
+      response.status(500).json({error});
+    })
+    .then(() => {
+      database('songs').select()
+      .then(songs => {
+        response.status(200).json({songs});
+      })
+      .catch(error => {
+        response.status(500).json({error});
+      })
+    })
 })
 
 app.get('/api/v1/playlists', (request, response) => {
