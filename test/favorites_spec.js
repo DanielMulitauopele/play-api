@@ -23,6 +23,7 @@ describe('GET /api/v1/songs', () => {
     .get('/api/v1/songs')
     .end((error, response) => {
       response.should.have.status(200);
+      response.should.be.json;
       done();
     });
   });

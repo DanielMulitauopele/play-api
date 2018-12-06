@@ -91,6 +91,7 @@ describe('GET /api/v1/playlists', () => {
     .get('/api/v1/playlists')
     .end((error, response) => {
       response.should.have.status(200);
+      response.should.be.json;
       done();
     });
   });
