@@ -68,6 +68,10 @@ app.get('/api/v1/songs/:id', (request, response) => {
     })
 })
 
+app.get('/api/v1/playlists/:id/songs', (request, response) => {
+  
+})
+
 app.get('/api/v1/playlists', (request, response) => {
   database('playlists').select()
   .then((playlists) => {
@@ -77,8 +81,6 @@ app.get('/api/v1/playlists', (request, response) => {
     response.status(500).json({error});
   });
 });
-
-
 
 app.post('/api/v1/playlists', (request, response) => {
   const playlist = request.body;
