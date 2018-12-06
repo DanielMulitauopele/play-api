@@ -87,11 +87,13 @@ app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
   database('playlists').where('id', playlistId).select()
     .then(playlists => {
       if(playlists.length) {
-        return playlistName = playlists[0]['playlist_name'];
+        playlistName = playlists[0]['playlist_name'];
       } else {
-        return response.status(404).json({
-          error: `Could not find playlist with id ${playlistId}`
-        });
+        response
+          .status(404)
+          .json({
+            error: `Could not find playlist with id ${playlistId}`
+          });
       }
     })
     .catch(error => {
@@ -101,25 +103,27 @@ app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
   database('songs').where('id', songId).select()
     .then(songs => {
       if(songs.length) {
-        return songName = songs[0]['name'];
+        songName = songs[0]['name'];
       } else {
-        return response.status(404).json({
-          error: `Could not find playlist with id ${playlistId}`
-        });
+        response
+          .status(404)
+          .json({
+            error: `Could not find song with id ${songId}`
+          });
       }
     })
     .catch(error => {
       response.status(500).json({ error })
     });
 
-  database('playlist_songs').insert( { song_id: songId, playlist_id: playlistId} )
+  database('playlist_songs').insert({ song_id: songId, playlist_id: playlistId })
     .then(data => {
       response.status(201).json({
         message: `Successfully added ${songName} to ${playlistName}`
       });
     })
     .catch(error => {
-      response.status(500).json({ error });
+      response.status(500).send({ error });
     });
 });
 
