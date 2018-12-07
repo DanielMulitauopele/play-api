@@ -68,6 +68,30 @@ app.get('/api/v1/songs/:id', (request, response) => {
     })
 })
 
+app.get('/api/v1/playlists/:id/songs', (request, response) => {
+  let playlistResponse;
+  let songResponse;
+  let playlistId = request.params.id;
+
+  database('playlists').where('id', playlistId).select(['id', 'playlist_name'])
+    .then(playlists => {
+      if(playlists.length) {
+        playlistResponse = playlists[0];
+      } else {
+        response.status(404).json({ error: `Playlist with ID ${playlistId} does not exist` });
+      }
+    })
+    .then(() => {
+      database('playlist_songs').where('playlist_id', playlistId)
+        .select(['songs.id', 'name', 'artist_name', 'genre', 'song_rating'])
+        .join('songs', {'songs.id': 'playlist_songs.song_id'})
+        .then(songs => {
+          playlistResponse["songs"] = songs;
+          response.status(200).json(playlistResponse);
+        });
+    });
+});
+
 app.get('/api/v1/playlists', (request, response) => {
   database('playlists').select()
   .then((playlists) => {
