@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('./knexfile')[environment];
 const database = require('knex')(configuration);
-const pry = require('pryjs')
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true}));
@@ -70,28 +69,28 @@ app.get('/api/v1/songs/:id', (request, response) => {
 })
 
 app.get('/api/v1/playlists/:id/songs', (request, response) => {
-  database('playlists').where('id', request.params.id).select()
-    .then (playlists => {
-      if (playlists.length) {
-        playlistName = playlists[0]['playlist_name']
+  let playlistResponse;
+  let songResponse;
+  let playlistId = request.params.id;
+
+  database('playlists').where('id', playlistId).select(['id', 'playlist_name'])
+    .then(playlists => {
+      if(playlists.length) {
+        playlistResponse = playlists[0];
       } else {
-        response.status(404).json({ error: `Playlist with ID ${request.params.id} does not exist` });
+        response.status(404).json({ error: `Playlist with ID ${playlistId} does not exist` });
       }
     })
     .then(() => {
-      database('songs').select()
-      .then(songs => {
-        if (songs.length > 0) {
-          response.status(200).json({songs});
-        } else {
-          response.status(404).json({error: `There are no saved songs in ${playlistName}`})
-        }
-      })
-    })
-    .catch ((error) => {
-      response.status(500).json({error});
-    })
-})
+      database('playlist_songs').where('playlist_id', playlistId)
+        .select(['songs.id', 'name', 'artist_name', 'genre', 'song_rating'])
+        .join('songs', {'songs.id': 'playlist_songs.song_id'})
+        .then(songs => {
+          playlistResponse["songs"] = songs;
+          response.status(200).json(playlistResponse);
+        });
+    });
+});
 
 app.get('/api/v1/playlists', (request, response) => {
   database('playlists').select()
