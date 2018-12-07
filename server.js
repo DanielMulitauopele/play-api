@@ -99,6 +99,21 @@ app.post('/api/v1/playlists', (request, response) => {
 app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
   let playlistId = request.params.playlist_id;
   let songId = request.params.id;
+  let songName;
+  let playlistName;
+
+  it('should not add a song to invalid playlist', done => {
+      chai.request(server)
+        .post('/api/v1/playlists/1000/songs/1')
+        .end((err, response) => {
+          response.should.have.status(404);
+          response.should.be.json;
+          response.should.be.a('Object');
+          response.body.should.have.property('error');
+          response.body.error.should.equal('Playlist with ID 1000 does not exist')
+          done();
+        });
+    });
 
   database('playlists').where('id', playlistId).select()
     .then(playlists => {
@@ -117,14 +132,19 @@ app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
             response.status(404).send({ error: `Song with ID ${songId} does not exist` });
           }
         })
-        .then(() => {
-          database('playlist_songs').insert({ song_id: songId, playlist_id: playlistId })
-            .then(data => {
-              response.status(201).json({
-                message: `Successfully added ${songName} to ${playlistName}`
-              })
-            })
-        })
+    .then(() => {
+      if(songName && playlistName) {
+        database('playlist_songs').insert({ song_id: songId, playlist_id: playlistId })
+          .then(data => {
+            response.status(201).json({
+              message: `Successfully added ${songName} to ${playlistName}`
+            });
+          })
+          .catch(error => {
+            response.status(500).send({ error });
+          });
+      }
+      });
     })
     .catch(error => {
       response.status(500).send({ error });
