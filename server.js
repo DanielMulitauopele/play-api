@@ -102,19 +102,6 @@ app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
   let songName;
   let playlistName;
 
-  it('should not add a song to invalid playlist', done => {
-      chai.request(server)
-        .post('/api/v1/playlists/1000/songs/1')
-        .end((err, response) => {
-          response.should.have.status(404);
-          response.should.be.json;
-          response.should.be.a('Object');
-          response.body.should.have.property('error');
-          response.body.error.should.equal('Playlist with ID 1000 does not exist')
-          done();
-        });
-    });
-
   database('playlists').where('id', playlistId).select()
     .then(playlists => {
       if(playlists.length) {
