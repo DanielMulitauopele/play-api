@@ -100,5 +100,18 @@ describe('API Playlist Endpoints', () => {
           done();
         });
     });
+
+    it('should not add an invalid song to playlist', done => {
+      chai.request(server)
+        .post('/api/v1/playlists/1/songs/1000')
+        .end((err, response) => {
+          response.should.have.status(404);
+          response.should.be.json;
+          response.should.be.a('Object');
+          response.body.should.have.property('error');
+          response.body.error.should.equal('Song with ID 1000 does not exist')
+          done();
+        });
+    });
   });
 });
