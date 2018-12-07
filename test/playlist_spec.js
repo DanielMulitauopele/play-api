@@ -122,7 +122,30 @@ describe('API Playlist Endpoints', () => {
         .end((error, response) => {
           response.should.have.status(200);
           response.should.be.json;
+          response.should.be.a('Object');
+          response.body.should.have.property('id');
+          response.body.should.have.property('playlist_name');
+          response.body.should.have.property('songs');
+          response.body.songs.should.be.a('Array');
+          response.body.songs.should.have.lengthOf(3);
+          response.body.songs[0].should.have.property('id');
+          response.body.songs[0].should.have.property('name');
+          response.body.songs[0].should.have.property('artist_name');
+          response.body.songs[0].should.have.property('genre');
+          response.body.songs[0].should.have.property('song_rating');
           done();
+        })
+    });
+
+    it('should return 404 if given invalid playlist', () => {
+      chai.request(server)
+        .get('/api/v1/playlists/1000/songs')
+        .end((error, response) => {
+          response.should.have.status(404);
+          response.should.be.json;
+          response.should.be.a('Object');
+          response.should.have.property('error');
+          response.body.error.should.equal('Playlist with ID 1000 does not exist');
         })
     });
   });
