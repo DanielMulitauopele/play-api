@@ -120,6 +120,28 @@ app.post('/api/v1/playlists', (request, response) => {
     });
 });
 
+app.delete('/api/v1/songs/:id', (request, response) => {
+  let songId = request.params.id;
+
+  database('songs').where('id', songId).select()
+    .then((song) => {
+      if(song.length) {
+        database('songs').where('id', songId).del()
+          .then(() => {
+            response.status(204).end();
+          })
+          .catch(error => {
+            response.status(500).send({ error });
+          });
+      } else {
+        response.status(404).json({ message: `Song with ID ${songId} not found` });
+      }
+    })
+    .catch(error => {
+      response.status(500).send({ error });
+    });
+});
+
 app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
   let playlistId = request.params.playlist_id;
   let songId = request.params.id;
