@@ -23,9 +23,11 @@ exports.up = function(knex, Promise) {
       table.integer('song_id').unsigned();
       table.integer('playlist_id').unsigned();
       table.foreign('song_id')
-        .references('songs.id');
+        .references('songs.id')
+        .onDelete('CASCADE');
       table.foreign('playlist_id')
-        .references('playlists.id');
+        .references('playlists.id')
+        .onDelete('CASCADE');
     })
   ])
 };
