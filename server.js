@@ -42,8 +42,8 @@ app.post('/api/v1/songs', (request, response) => {
     });
 });
 
-app.get('/api/v1/songs', (request, response) => {
-  database('songs').select()
+app.get('/api/v1/favorites', (request, response) => {
+  database('songs').select(['id', 'name', 'artist_name', 'genre', 'song_rating'])
   .then((songs) => {
     response.status(200).json(songs);
   })
