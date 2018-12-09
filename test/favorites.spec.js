@@ -173,7 +173,7 @@ describe('API Songs Endpoint', () => {
   describe('GET /api/v1/songs', () => {
     it('should return all favorited songs', done => {
       chai.request(server)
-        .get('/api/v1/favorites')
+        .get('/api/v1/songs')
         .end((error, response) => {
           response.should.have.status(200);
           response.should.be.json;
