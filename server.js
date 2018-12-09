@@ -92,14 +92,21 @@ app.get('/api/v1/playlists/:id/songs', (request, response) => {
     });
 });
 
+pry = require('pryjs');
+
 app.get('/api/v1/playlists', (request, response) => {
-  database('playlists').select()
-  .then((playlists) => {
-    response.status(200).json(playlists);
-  })
-  .catch((error) => {
-    response.status(500).json({error});
-  });
+  database.raw(`SELECT playlists.id, playlists.playlist_name, array_agg(json_build_object('id', songs.id, 'name', songs.name, 'artist_name', songs.artist_name, 'genre', songs.genre, 'song_rating', songs.song_rating)) as songs
+                FROM playlists
+                INNER JOIN playlist_songs ON playlists.id = playlist_songs.playlist_id
+                INNER JOIN songs ON songs.id = playlist_songs.song_id
+                GROUP BY playlists.id
+                ORDER BY playlists.id`)
+          .then(playlists => {
+            response.status(200).json(playlists.rows);
+          })
+          .catch(error => {
+            response.status(500).send({ error })
+          });
 });
 
 app.post('/api/v1/playlists', (request, response) => {
