@@ -6,6 +6,9 @@ const environment = process.env.NODE_ENV || 'development';
 const configuration = require('./knexfile')[environment];
 const database = require('knex')(configuration);
 
+const songsController = require('./lib/controllers/songs_controller');
+const playlistsController = require('./lib/controllers/playlists_controller');
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true}));
 app.set('port', process.env.PORT || 3000);
