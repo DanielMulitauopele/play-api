@@ -26,6 +26,49 @@ describe('API Playlist Endpoints', () => {
       });
   });
 
+  describe('DELETE /api/v1/playlists/:playlist_id/songs/:song_id', () => {
+    it('should remove a song from a playlist', done => {
+      let songCount;
+
+      database('playlist_songs').select().where('playlist_id', 1)
+        .then(songs => {
+          songCount = songs.length;
+        })
+        .then(() => {
+          chai.request(server)
+            .delete('/api/v1/playlists/1/songs/1')
+            .end((err, res) => {
+              res.should.have.status(200);
+              res.should.be.json;
+              res.should.be.a('Object');
+              res.body.should.have.property('message');
+              res.body.message.should.equal('Successfully removed Fooo from Chill Mood');
+              songCount--;
+            });
+        })
+        .then(() => {
+          database('playlist_songs').select().where('playlist_id', 1)
+            .then(songs => {
+              songs.length.should.equal(songCount);
+            });
+        });
+      done();
+    });
+
+    it('should return 404 if playlist or song is not found', done => {
+      chai.request(server)
+        .delete('/api/v1/playlists/1000/songs/1000')
+        .end((err, res) => {
+          res.should.have.status(404);
+          res.should.be.json;
+          res.should.be.a('Object');
+          res.body.should.have.property('error')
+          res.body.error.should.equal('Playlist or song not found');
+          done();
+        });
+    });
+  });
+
   describe('POST /api/v1/playlists', () => {
     it('should create a new playlist', done => {
       chai.request(server)
