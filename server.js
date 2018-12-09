@@ -108,6 +108,33 @@ app.post('/api/v1/playlists', (request, response) => {
     });
 });
 
+app.patch('/api/v1/songs/:id', (request, response) => {
+  let songId = request.params.id;
+  let updateParams = request.body;
+  let requiredParameter = ['name', 'artist_name', 'genre', 'song_rating'];
+  var invalidQuery = false;
+
+  for (let parameter of Object.keys(updateParams)) {
+    if(!requiredParameter.includes(parameter)) {
+      return response.status(400)
+        .send({ error: `Invalid parameter field <${parameter}>` })
+    }
+  }
+
+  database('songs').select().where('id', songId)
+    .then(song => {
+      if (song.length) {
+        database('songs').update(updateParams).where('id', songId)
+          .returning(['id', 'name', 'artist_name', 'genre', 'song_rating'])
+          .then((song) => {
+            response.status(200).json({ songs: song[0] })
+          });
+      } else {
+        response.status(404).json({ error: `Song with ID ${songId} not found` })
+      }
+    });
+});
+
 app.delete('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
   let playlistId = request.params.playlist_id;
   let songId = request.params.id;
