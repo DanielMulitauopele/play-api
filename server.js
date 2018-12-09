@@ -18,83 +18,11 @@ app.get('/', (request, response) => {
   response.send('Play Back End');
 });
 
-app.post('/api/v1/songs', (request, response) => {
-  const song = request.body;
-  const requiredParameter = ['name', 'artist_name', 'genre', 'song_rating'];
+const songs = require('./lib/routes/api/v1/songs');
+const playlists = require('./lib/routes/api/v1/playlists');
 
-  for (let parameter of requiredParameter) {
-    if (!song[parameter]) {
-      return response
-        .status(400)
-        .send({ error: `Expected format: { name: <String>, artist_name: <String>, genre: <String>, song_rating: <Integer> }. You're missing a "${parameter}" property.` });
-    }
-  }
-
-  if ((song['song_rating'] > 100) || (song['song_rating'] < 1)) {
-    return response
-      .status(400)
-      .send( {error: `song_rating: ${song['song_rating']} is invalid. song_rating must be an integer between 1 and 100.` } );
-  }
-
-  database('songs').insert(song, ['id', 'name', 'artist_name', 'genre', 'song_rating'])
-    .then(song => {
-      response.status(201).json({ songs: song[0] })
-    });
-});
-
-app.get('/api/v1/favorites', (request, response) => {
-  database('songs').select(['id', 'name', 'artist_name', 'genre', 'song_rating'])
-  .then((songs) => {
-    response.status(200).json(songs);
-  });
-});
-
-app.get('/api/v1/songs/:id', (request, response) => {
-  database('songs').where('id', request.params.id).select()
-    .then(song => {
-      if (song.length) {
-        response.status(200).json(song);
-      } else {
-        response.status(404).json({
-          error: `Could not find song with id: ${request.params.id}`
-        })
-      }
-    });
-})
-
-app.get('/api/v1/playlists/:id/songs', (request, response) => {
-  let playlistResponse;
-  let songResponse;
-  let playlistId = request.params.id;
-
-  database('playlists').where('id', playlistId).select(['id', 'playlist_name'])
-    .then(playlists => {
-      if(playlists.length) {
-        playlistResponse = playlists[0];
-        database('playlist_songs').where('playlist_id', playlistId)
-          .select(['songs.id', 'name', 'artist_name', 'genre', 'song_rating'])
-          .join('songs', {'songs.id': 'playlist_songs.song_id'})
-          .then(songs => {
-            playlistResponse["songs"] = songs;
-            response.status(200).json(playlistResponse);
-          });
-      } else {
-        response.status(404).json({ error: `Playlist with ID ${playlistId} does not exist` });
-      }
-    });
-});
-
-app.get('/api/v1/playlists', (request, response) => {
-  database.raw(`SELECT playlists.id, playlists.playlist_name, array_agg(json_build_object('id', songs.id, 'name', songs.name, 'artist_name', songs.artist_name, 'genre', songs.genre, 'song_rating', songs.song_rating)) as songs
-                FROM playlists
-                INNER JOIN playlist_songs ON playlists.id = playlist_songs.playlist_id
-                INNER JOIN songs ON songs.id = playlist_songs.song_id
-                GROUP BY playlists.id
-                ORDER BY playlists.id`)
-          .then(playlists => {
-            response.status(200).json(playlists.rows);
-          });
-});
+app.use('/api/v1/songs', songs);
+app.use('/api/v1/playlists', playlists);
 
 app.post('/api/v1/playlists', (request, response) => {
   const playlist = request.body;
@@ -108,33 +36,6 @@ app.post('/api/v1/playlists', (request, response) => {
   database('playlists').insert(playlist, ['id', 'playlist_name'])
     .then(playlist => {
       response.status(201).json({ playlist: playlist[0] })
-    });
-});
-
-app.patch('/api/v1/songs/:id', (request, response) => {
-  let songId = request.params.id;
-  let updateParams = request.body;
-  let requiredParameter = ['name', 'artist_name', 'genre', 'song_rating'];
-  var invalidQuery = false;
-
-  for (let parameter of Object.keys(updateParams)) {
-    if(!requiredParameter.includes(parameter)) {
-      return response.status(400)
-        .send({ error: `Invalid parameter field <${parameter}>` })
-    }
-  }
-
-  database('songs').select().where('id', songId)
-    .then(song => {
-      if (song.length) {
-        database('songs').update(updateParams).where('id', songId)
-          .returning(['id', 'name', 'artist_name', 'genre', 'song_rating'])
-          .then((song) => {
-            response.status(200).json({ songs: song[0] })
-          });
-      } else {
-        response.status(404).json({ error: `Song with ID ${songId} not found` })
-      }
     });
 });
 
@@ -170,22 +71,6 @@ app.delete('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
             response.status(404).json({ error: 'Playlist or song not found' });
           }
         });
-    });
-});
-
-app.delete('/api/v1/songs/:id', (request, response) => {
-  let songId = request.params.id;
-
-  database('songs').where('id', songId).select()
-    .then((song) => {
-      if(song.length) {
-        database('songs').where('id', songId).del()
-          .then(() => {
-            response.status(204).end();
-          });
-      } else {
-        response.status(404).json({ message: `Song with ID ${songId} not found` });
-      }
     });
 });
 
