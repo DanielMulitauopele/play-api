@@ -12,6 +12,62 @@ const database = require('knex')(configuration);
 chai.use(chaiHttp);
 
 describe('API Songs Endpoint', () => {
+  describe('PATCH /api/v1/songs/:id', () => {
+    it('should update a song', done => {
+      chai.request(server)
+        .patch('/api/v1/songs/1')
+        .send({
+          name: 'Foobar'
+        })
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.should.be.json;
+          res.should.be.a('Object');
+          res.body.should.have.property('songs');
+          res.body.songs.should.have.property('id');
+          res.body.songs.should.have.property('name');
+          res.body.songs.should.have.property('artist_name');
+          res.body.songs.should.have.property('genre');
+          res.body.songs.should.have.property('song_rating');
+          res.body.songs.name.should.equal('Foobar');
+          done();
+        });
+    });
+
+    it('should return 404 if song ID not found', done => {
+      chai.request(server)
+        .patch('/api/v1/songs/1000')
+        .send({
+          name: 'Foobat'
+        })
+        .end((err, res) => {
+          res.should.have.status(404);
+          res.should.be.json;
+          res.should.be.a('Object');
+          res.body.should.have.property('error');
+          res.body.error.should.equal('Song with ID 1000 not found');
+          done();
+        });
+    });
+
+    it('should return a 400 if invalid parameters', done => {
+      chai.request(server)
+        .patch('/api/v1/songs/1')
+        .send({
+          name: 'Valid field',
+          album: 'Invalid field'
+        })
+        .end((err, res) => {
+          res.should.have.status(400);
+          res.should.be.json;
+          res.should.be.a('Object');
+          res.body.should.have.property('error');
+          res.body.error.should.equal('Invalid parameter field <album>');
+          done();
+        });
+    });
+  });
+
   describe('DELETE /api/v1/songs/:id', () => {
     it('should delete a song', done => {
       let songCount;
