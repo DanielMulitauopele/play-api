@@ -79,10 +79,13 @@ describe('API Songs Endpoint', () => {
       .end((error, response) => {
         response.should.have.status(200);
         response.should.be.json;
-        response.body[0].name.should.equal('Fooey')
-        response.body[0].artist_name.should.equal('Bobbie')
-        response.body[0].genre.should.equal('Rap')
-        response.body[0].song_rating.should.equal(62)
+        response.should.be.a('Object');
+        response.body.should.be.a('Array');
+        response.body[0].should.have.property('id');
+        response.body[0].should.have.property('name');
+        response.body[0].should.have.property('artist_name');
+        response.body[0].should.have.property('genre');
+        response.body[0].should.have.property('song_rating');
         done();
       });
     });
