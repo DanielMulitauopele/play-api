@@ -69,6 +69,18 @@ describe('API Playlist Endpoints', () => {
       .end((error, response) => {
         response.should.have.status(200);
         response.should.be.json;
+        response.should.be.a('Object');
+        response.body.should.be.a('Array');
+        response.body[0].should.have.property('id');
+        response.body[0].should.have.property('playlist_name');
+        response.body[0].should.have.property('songs');
+        response.body[0].songs.should.be.a('Array');
+        response.body[0].songs[0].should.be.a('Object');
+        response.body[0].songs[0].should.have.property('id');
+        response.body[0].songs[0].should.have.property('name');
+        response.body[0].songs[0].should.have.property('artist_name');
+        response.body[0].songs[0].should.have.property('genre');
+        response.body[0].songs[0].should.have.property('song_rating');
         done();
       });
     });
