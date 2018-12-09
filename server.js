@@ -108,6 +108,41 @@ app.post('/api/v1/playlists', (request, response) => {
     });
 });
 
+app.delete('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
+  let playlistId = request.params.playlist_id;
+  let songId = request.params.id;
+  let songName;
+  let playlistName;
+  let songCount;
+
+  database('songs').pluck('name').where('id', songId)
+    .then(song => {
+      songName = song[0];
+    })
+    .then(() => {
+      database('playlists').pluck('playlist_name').where('id', playlistId)
+        .then(playlist => {
+          playlistName = playlist[0];
+        });
+    })
+    .then(() => {
+      database('playlist_songs').select().where({ playlist_id: playlistId, song_id: songId })
+        .then(songs => {
+          if(songs.length) {
+            database('playlist_songs').where({ playlist_id: playlistId, song_id: songId })
+              .del()
+              .then(() => {
+                response.status(200).json({
+                  message: `Successfully removed ${songName} from ${playlistName}`
+                });
+              });
+          } else {
+            response.status(404).json({ error: 'Playlist or song not found' });
+          }
+        });
+    });
+});
+
 app.delete('/api/v1/songs/:id', (request, response) => {
   let songId = request.params.id;
 
