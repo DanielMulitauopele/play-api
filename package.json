@@ -2,7 +2,7 @@
   "name": "play-api",
   "version": "1.0.0",
   "description": "The backend Express application to run Play's frontend.",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "nyc --reporter=text --reporter=html mocha --exit",
     "start": "node server.js"
