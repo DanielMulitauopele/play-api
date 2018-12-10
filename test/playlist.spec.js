@@ -17,7 +17,7 @@ describe('API Playlist Endpoints', () => {
       .then(() => {
         database.migrate.latest()
           .then(() => {
-            database.seed.run()
+            return database.seed.run()
             .then(() => done())
             .catch(error => {
               throw error;
@@ -55,15 +55,28 @@ describe('API Playlist Endpoints', () => {
       done();
     });
 
-    it('should return 404 if playlist or song is not found', done => {
+    it('should return 404 if playlist is not found', done => {
       chai.request(server)
-        .delete('/api/v1/playlists/1000/songs/1000')
+        .delete('/api/v1/playlists/1000/songs/1')
         .end((err, res) => {
           res.should.have.status(404);
           res.should.be.json;
           res.should.be.a('Object');
           res.body.should.have.property('error')
-          res.body.error.should.equal('Playlist or song not found');
+          res.body.error.should.equal('Playlist with ID 1000 does not exist');
+          done();
+        });
+    });
+
+    it('should return 404 if song is not found', done => {
+      chai.request(server)
+        .delete('/api/v1/playlists/1/songs/1000')
+        .end((err, res) => {
+          res.should.have.status(404);
+          res.should.be.json;
+          res.should.be.a('Object');
+          res.body.should.have.property('error');
+          res.body.error.should.equal('Song with ID 1000 does not exist');
           done();
         });
     });

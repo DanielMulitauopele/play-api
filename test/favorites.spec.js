@@ -12,6 +12,20 @@ const database = require('knex')(configuration);
 chai.use(chaiHttp);
 
 describe('API Songs Endpoint', () => {
+  beforeEach((done) => {
+    database.migrate.rollback()
+      .then(() => {
+        database.migrate.latest()
+          .then(() => {
+            return database.seed.run()
+            .then(() => done())
+            .catch(error => {
+              throw error;
+            });
+          });
+      });
+  });
+  
   describe('PATCH /api/v1/songs/:id', () => {
     it('should update a song', done => {
       chai.request(server)
@@ -173,7 +187,7 @@ describe('API Songs Endpoint', () => {
   describe('GET /api/v1/songs', () => {
     it('should return all favorited songs', done => {
       chai.request(server)
-        .get('/api/v1/favorites')
+        .get('/api/v1/songs')
         .end((error, response) => {
           response.should.have.status(200);
           response.should.be.json;
