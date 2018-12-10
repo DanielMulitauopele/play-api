@@ -14,30 +14,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.set('port', process.env.PORT || 3000);
 app.locals.title = 'Play BE';
 
-app.get('/', (request, response) => {
-  response.send('Play Back End');
-});
-
 const songs = require('./lib/routes/api/v1/songs');
 const playlists = require('./lib/routes/api/v1/playlists');
 
 app.use('/api/v1/songs', songs);
 app.use('/api/v1/playlists', playlists);
 
-// app.post('/api/v1/playlists', (request, response) => {
-//   const playlist = request.body;
-
-//   if(!playlist['playlist_name']) {
-//     return response
-//       .status(400)
-//       .send({ error: `Expected format: { playlist_name: <String> }.` });
-//   }
-
-//   database('playlists').insert(playlist, ['id', 'playlist_name'])
-//     .then(playlist => {
-//       response.status(201).json({ playlist: playlist[0] })
-//     });
-// });
+app.get('/', (request, response) => {
+  response.send('Play Back End');
+});
 
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}.`);
