@@ -12,6 +12,20 @@ const database = require('knex')(configuration);
 chai.use(chaiHttp);
 
 describe('API Songs Endpoint', () => {
+  beforeEach((done) => {
+    database.migrate.rollback()
+      .then(() => {
+        database.migrate.latest()
+          .then(() => {
+            return database.seed.run()
+            .then(() => done())
+            .catch(error => {
+              throw error;
+            });
+          });
+      });
+  });
+  
   describe('PATCH /api/v1/songs/:id', () => {
     it('should update a song', done => {
       chai.request(server)
