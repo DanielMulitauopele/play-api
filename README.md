@@ -34,7 +34,7 @@ their favorite songs to a playlist. Song metadata comes from the [MusixMatch API
 
 ## System Requirements
 
-This application requires several technologies to be installed toy our local
+This application requires several technologies to be installed to your local
 machine. The following are required:
 
 1. [NodeJS](https://nodejs.org/en/)
