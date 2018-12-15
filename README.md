@@ -10,20 +10,18 @@
 * [Dependencies](#dependencies)
 * [Contributors](#contributors)
 * [API Endpoints](#api-endpoints)
-    * [Songs Endpoints](#songs-endpoints)
-        * [GET /api/v1/songs](#get-apiv1songs)
-        * [GET /api/v1/songs/:id](#get-apiv1songsid)
-        * [POST /api/v1/songs](#post-apiv1songs)
-        * [PATCH /api/v1/songs/:id](#patch-apiv1songsid)
-        * [DELETE /api/v1/songs/:id](#delete-apiv1songsid)
-    * [Playlists Endpoints](#playlists-endpoints)
-        * [GET /api/v1/playlists](#get-apiv1playlists)
-        * [POST /api/v1/playlists](#post-apiv1playlists)
-        * [GET /api/v1/playlists/:playlist_id/songs](#get-apiv1playlistsplaylist_idsongs)
-        * [POST /api/v1/playlists/:playlist_id/songs/:id](#post-apiv1playlistsplaylist_idsongsid)
-        * [DELETE /api/v1/playlists/:playlist_id/songs/:id](#delete-apiv1playlistsplaylist_idsongsid)
-
-
+    * [Songs](#songs)
+        * [Retrieve All Songs](#get-apiv1songs)
+        * [Retrieve A Song](#get-apiv1songsid)
+        * [Add A Song](#post-apiv1songs)
+        * [Update A Song](#patch-apiv1songsid)
+        * [Delete A Song](#delete-apiv1songsid)
+    * [Playlists](#playlists)
+        * [Retrieve All Playlists](#get-apiv1playlists)
+        * [Create A Playlist](#post-apiv1playlists)
+        * [Retrieve A Playlist](#get-apiv1playlistsplaylist_idsongs)
+        * [Add Song To A Playlist](#post-apiv1playlistsplaylist_idsongsid)
+        * [Remove Song From A Playlist](#delete-apiv1playlistsplaylist_idsongsid)
 
 ## Description/Purpose
 
